@@ -4,7 +4,7 @@ import MobileNav from "./MobileNav";
 
 const Header = () => {
   return (
-    <div className="border-b-2 border-b-pink-500 py-5">
+    <header className="border-b-2 border-b-pink-500 h-[82px] flex items-center">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold text-pink-500">
           Yummy Tummy
@@ -16,7 +16,7 @@ const Header = () => {
           <MobileNav />
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
