@@ -49,7 +49,7 @@ const Hero = () => {
                   velit excepturi ipsa facilis et tempore consequuntur, atque
                   rem, necessitatibus nemo officia ab?
                 </p>
-                <Link href="/">
+                <Link href="/#get_started">
                   <Button size="lg" className="md:text-xl bg-pink-500">
                     Get Started
                   </Button>
