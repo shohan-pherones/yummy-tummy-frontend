@@ -19,7 +19,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       <MyAuth0Provider>
         <html lang="en" className="scroll-smooth">
           <body className={rubik.className}>
-            <Toaster visibleToasts={1} richColors position="bottom-right" />
+            <Toaster visibleToasts={1} richColors position="top-right" />
             <main className="min-h-screen flex flex-col">
               <Header />
               <div className="flex-1">{children}</div>

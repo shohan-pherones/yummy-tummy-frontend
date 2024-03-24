@@ -15,6 +15,8 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
+import { User } from "@/types";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   email: z.string().optional(),
@@ -27,14 +29,20 @@ const formSchema = z.object({
 export type UserFormDataType = z.infer<typeof formSchema>;
 
 interface Props {
+  currentUser: User;
   isLoading: boolean;
   onSave: (userProfileData: UserFormDataType) => void;
 }
 
-const UserProfileForm = ({ isLoading, onSave }: Props) => {
+const UserProfileForm = ({ currentUser, isLoading, onSave }: Props) => {
   const form = useForm<UserFormDataType>({
     resolver: zodResolver(formSchema),
+    defaultValues: currentUser,
   });
+
+  useEffect(() => {
+    form.reset(currentUser);
+  }, [form, currentUser]);
 
   return (
     <Form {...form}>
