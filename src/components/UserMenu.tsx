@@ -23,7 +23,12 @@ const UserMenu = () => {
           <Link href="/user-profile">User Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Button onClick={() => logout()} className="font-bold bg-pink-500">
+          <Button
+            onClick={() =>
+              logout({ logoutParams: { returnTo: window.location.origin } })
+            }
+            className="font-bold bg-pink-500"
+          >
             Log Out
           </Button>
         </DropdownMenuItem>
