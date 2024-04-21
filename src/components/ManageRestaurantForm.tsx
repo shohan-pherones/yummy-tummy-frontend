@@ -18,6 +18,7 @@ import { Input } from "./ui/input";
 import AddMenuSection from "./AddMenuSection";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
+import { Restaurant } from "@/types";
 
 const formSchema = z.object({
   restaurantName: z.string({ required_error: "restaurant name is required" }),
@@ -46,9 +47,10 @@ export type RestaurantFormDataType = z.infer<typeof formSchema>;
 interface Props {
   onSave: (restaurantFormData: FormData) => void;
   isLoading: boolean;
+  restaurant?: Restaurant;
 }
 
-const ManageRestaurantForm = ({ onSave, isLoading }: Props) => {
+const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
   const form = useForm<RestaurantFormDataType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
