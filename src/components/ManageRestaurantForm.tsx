@@ -1,9 +1,16 @@
 "use client";
 
 import { cuisineList } from "@/config";
+import { Restaurant } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import AddMenuSection from "./AddMenuSection";
+import { AspectRatio } from "./ui/aspect-ratio";
+import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import {
   Form,
@@ -15,35 +22,34 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import AddMenuSection from "./AddMenuSection";
-import { Button } from "./ui/button";
-import { Loader2 } from "lucide-react";
-import { Restaurant } from "@/types";
-import { useEffect } from "react";
-import { AspectRatio } from "./ui/aspect-ratio";
-import Image from "next/image";
 
-const formSchema = z.object({
-  restaurantName: z.string({ required_error: "restaurant name is required" }),
-  country: z.string({ required_error: "country is required" }),
-  city: z.string({ required_error: "city is required" }),
-  deliveryPrice: z.coerce.number({
-    required_error: "delivery price is required",
-  }),
-  estimatedDeliveryTime: z.coerce.number({
-    required_error: "estimated delivery time is required",
-  }),
-  cuisines: z
-    .array(z.string())
-    .nonempty({ message: "please select at least one item" }),
-  menuItems: z.array(
-    z.object({
-      name: z.string().min(1, "name is required"),
-      price: z.coerce.number().min(1, "price is required"),
-    })
-  ),
-  imageFile: z.instanceof(File, { message: "image is required" }),
-});
+const formSchema = z
+  .object({
+    restaurantName: z.string({ required_error: "restaurant name is required" }),
+    country: z.string({ required_error: "country is required" }),
+    city: z.string({ required_error: "city is required" }),
+    deliveryPrice: z.coerce.number({
+      required_error: "delivery price is required",
+    }),
+    estimatedDeliveryTime: z.coerce.number({
+      required_error: "estimated delivery time is required",
+    }),
+    cuisines: z
+      .array(z.string())
+      .nonempty({ message: "please select at least one item" }),
+    menuItems: z.array(
+      z.object({
+        name: z.string().min(1, "name is required"),
+        price: z.coerce.number().min(1, "price is required"),
+      })
+    ),
+    imageUrl: z.string().optional(),
+    imageFile: z.instanceof(File, { message: "image is required" }).optional(),
+  })
+  .refine((data) => data.imageFile || data.imageUrl, {
+    message: "Either image file or image url must be provided",
+    path: ["imageFile"],
+  });
 
 export type RestaurantFormDataType = z.infer<typeof formSchema>;
 
@@ -115,7 +121,10 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
         (menuItem.price * 100).toString()
       );
     });
-    formData.append(`imageFile`, formDataJson.imageFile);
+
+    if (formDataJson.imageFile) {
+      formData.append(`imageFile`, formDataJson.imageFile);
+    }
 
     onSave(formData);
   };
