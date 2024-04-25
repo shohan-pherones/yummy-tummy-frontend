@@ -19,6 +19,9 @@ import AddMenuSection from "./AddMenuSection";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import { Restaurant } from "@/types";
+import { useEffect } from "react";
+import { AspectRatio } from "./ui/aspect-ratio";
+import Image from "next/image";
 
 const formSchema = z.object({
   restaurantName: z.string({ required_error: "restaurant name is required" }),
@@ -64,6 +67,29 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
       imageFile: undefined,
     },
   });
+
+  useEffect(() => {
+    if (!restaurant) {
+      return;
+    }
+
+    const deliveryPriceFormatted = parseFloat(
+      (restaurant.deliveryPrice / 100).toFixed(2)
+    );
+
+    const menuItemsFormatted = restaurant.menuItems.map((item) => ({
+      ...item,
+      price: parseFloat((item.price / 100).toFixed(2)),
+    }));
+
+    const updatedRestaurant = {
+      ...restaurant,
+      deliveryPrice: deliveryPriceFormatted,
+      menuItems: menuItemsFormatted,
+    };
+
+    form.reset(updatedRestaurant);
+  }, [form, restaurant]);
 
   const onSubmit = (formDataJson: RestaurantFormDataType) => {
     const formData = new FormData();
@@ -230,7 +256,18 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
             <FormDescription>Add an image to your restaurant</FormDescription>
           </div>
 
-          <div className="flex flex-col w-1/2 gap-5">
+          <div className="flex flex-col md:w-1/2 gap-5">
+            {restaurant?.imageUrl && restaurant?.restaurantName && (
+              <AspectRatio ratio={16 / 9}>
+                <Image
+                  src={restaurant.imageUrl}
+                  alt={restaurant.restaurantName}
+                  fill
+                  className="rounded-md object-cover"
+                />
+              </AspectRatio>
+            )}
+
             <FormField
               control={form.control}
               name="imageFile"
