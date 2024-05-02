@@ -32,7 +32,7 @@ export const useGetRestaurant = () => {
   } = useQuery("fetchCurrentRestaurant", getMyRestaurantRequest);
 
   if (error) {
-    toast.error(error.toString());
+    // toast.error(error.toString());
   }
 
   return { currentRestaurant, isLoading, error };
