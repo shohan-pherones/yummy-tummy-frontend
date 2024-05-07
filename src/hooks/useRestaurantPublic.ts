@@ -1,10 +1,19 @@
+import { SearchState } from "@/app/search/[city]/page";
 import { API_BASE_URL } from "@/constants";
 import { RestaurantSearchResponse } from "@/types";
 import { useQuery } from "react-query";
 
-export const useRestaurantPublic = (city?: string) => {
+export const useRestaurantPublic = (
+  searchState: SearchState,
+  city?: string
+) => {
   const createSearchRequest = async (): Promise<RestaurantSearchResponse> => {
-    const res = await fetch(`${API_BASE_URL}/api/restaurant/search/${city}`);
+    const params = new URLSearchParams();
+    params.set("searchQuery", searchState.searchQuery);
+
+    const res = await fetch(
+      `${API_BASE_URL}/api/restaurant/search/${city}?${params.toString()}`
+    );
 
     if (!res.ok) {
       throw new Error("Failed to get restaurants");
@@ -14,7 +23,7 @@ export const useRestaurantPublic = (city?: string) => {
   };
 
   const { data: results, isLoading } = useQuery(
-    ["SearchRestaurants"],
+    ["SearchRestaurants", searchState],
     createSearchRequest,
     { enabled: !!city }
   );
