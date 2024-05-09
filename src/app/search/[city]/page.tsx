@@ -2,6 +2,7 @@
 
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
+import PaginationSelector from "@/components/PaginationSelector";
 import SearchBar, { SearchForm } from "@/components/SearchBar";
 import SearchResultCard from "@/components/SearchResultCard";
 import SearchResultInfo from "@/components/SearchResultInfo";
@@ -10,19 +11,29 @@ import { useState } from "react";
 
 export interface SearchState {
   searchQuery: string;
+  page: number;
 }
 
 const SearchPage = ({ params }: { params: { city: string } }) => {
   const [searchState, setSearchState] = useState<SearchState>({
     searchQuery: "",
+    page: 1,
   });
 
   const { results, isLoading } = useRestaurantPublic(searchState, params.city);
+
+  const setPage = (page: number) => {
+    setSearchState((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
 
   const handleSearchQuery = (searchFormData: SearchForm) => {
     setSearchState((prev) => ({
       ...prev,
       searchQuery: searchFormData.searchQuery,
+      page: 1,
     }));
   };
 
@@ -30,6 +41,7 @@ const SearchPage = ({ params }: { params: { city: string } }) => {
     setSearchState((prev) => ({
       ...prev,
       searchQuery: "",
+      page: 1,
     }));
   };
 
@@ -55,6 +67,11 @@ const SearchPage = ({ params }: { params: { city: string } }) => {
         {results.data.map((restaurant) => (
           <SearchResultCard key={restaurant._id} restaurant={restaurant} />
         ))}
+        <PaginationSelector
+          page={results.pagination.page}
+          pages={results.pagination.pages}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );
