@@ -1,12 +1,14 @@
 "use client";
 
+import CheckoutButton from "@/components/CheckoutButton";
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import MenuItem from "@/components/MenuItem";
 import OrderSummery from "@/components/OrderSummery";
 import RestaurantInfo from "@/components/RestaurantInfo";
+import { UserFormDataType } from "@/components/UserProfileForm";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Card } from "@/components/ui/card";
+import { Card, CardFooter } from "@/components/ui/card";
 import { useGetPublicRestaurant } from "@/hooks/useGetPublicRestaurant";
 import { MenuItem as TMenuItem } from "@/types";
 import Image from "next/image";
@@ -24,7 +26,13 @@ const RestaurantDetailPage = ({
 }: {
   params: { restaurantId: string };
 }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    const storedCartItems = sessionStorage.getItem(
+      `cartItems-${params.restaurantId}`
+    );
+
+    return storedCartItems ? JSON.parse(storedCartItems) : [];
+  });
 
   const addToCart = (menuItem: TMenuItem) => {
     setCartItems((prevItems) => {
@@ -52,6 +60,11 @@ const RestaurantDetailPage = ({
         ];
       }
 
+      sessionStorage.setItem(
+        `cartItems-${params.restaurantId}`,
+        JSON.stringify(updatedCartItems)
+      );
+
       return updatedCartItems;
     });
   };
@@ -60,6 +73,11 @@ const RestaurantDetailPage = ({
     setCartItems((prevItems) => {
       const updatedCartItems = prevItems.filter(
         (item) => item._id !== cartItem._id
+      );
+
+      sessionStorage.setItem(
+        `cartItems-${params.restaurantId}`,
+        JSON.stringify(updatedCartItems)
       );
 
       return updatedCartItems;
@@ -86,6 +104,11 @@ const RestaurantDetailPage = ({
         );
       }
 
+      sessionStorage.setItem(
+        `cartItems-${params.restaurantId}`,
+        JSON.stringify(updatedCartItems)
+      );
+
       return updatedCartItems;
     });
   };
@@ -103,11 +126,20 @@ const RestaurantDetailPage = ({
             : item
         );
 
+        sessionStorage.setItem(
+          `cartItems-${params.restaurantId}`,
+          JSON.stringify(updatedCartItems)
+        );
+
         return updatedCartItems;
       } else {
         return [];
       }
     });
+  };
+
+  const handleCheckout = (userFormData: UserFormDataType) => {
+    console.log(userFormData);
   };
 
   const { isLoading, restaurant } = useGetPublicRestaurant(params.restaurantId);
@@ -152,6 +184,12 @@ const RestaurantDetailPage = ({
               handleQuantityDecrease={handleQuantityDecrease}
               handleQuantityIncrease={handleQuantityIncrease}
             />
+            <CardFooter>
+              <CheckoutButton
+                disabled={cartItems.length === 0}
+                onCheckout={handleCheckout}
+              />
+            </CardFooter>
           </Card>
         </div>
       </div>
