@@ -1,19 +1,20 @@
 "use client";
 
-import { useAuth0 } from "@auth0/auth0-react";
-import UserProfileForm, { UserFormDataType } from "./UserProfileForm";
-import { usePathname } from "next/navigation";
 import { useGetUser } from "@/hooks/useGetUser";
-import { Button } from "./ui/button";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Loader2 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import UserProfileForm, { UserFormDataType } from "./UserProfileForm";
+import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 interface Props {
   onCheckout: (userFormData: UserFormDataType) => void;
   disabled: boolean;
+  isLoading: boolean;
 }
 
-const CheckoutButton = ({ disabled, onCheckout }: Props) => {
+const CheckoutButton = ({ disabled, onCheckout, isLoading }: Props) => {
   const {
     isAuthenticated,
     isLoading: isAuthLoading,
@@ -40,7 +41,7 @@ const CheckoutButton = ({ disabled, onCheckout }: Props) => {
     );
   }
 
-  if (!currentUser || isAuthLoading) {
+  if (!currentUser || isAuthLoading || isLoading) {
     return (
       <Button disabled className="flex-1 flex items-center gap-2">
         <Loader2 className="animate-spin" size={18} />

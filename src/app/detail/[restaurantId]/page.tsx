@@ -9,9 +9,11 @@ import RestaurantInfo from "@/components/RestaurantInfo";
 import { UserFormDataType } from "@/components/UserProfileForm";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardFooter } from "@/components/ui/card";
+import { useCreateCheckoutSession } from "@/hooks/useCreateCheckoutSession";
 import { useGetPublicRestaurant } from "@/hooks/useGetPublicRestaurant";
-import { MenuItem as TMenuItem } from "@/types";
+import { CheckoutSessionRequest, MenuItem as TMenuItem } from "@/types";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export interface CartItem {
@@ -33,6 +35,11 @@ const RestaurantDetailPage = ({
 
     return storedCartItems ? JSON.parse(storedCartItems) : [];
   });
+
+  const { createCheckoutSession, isLoading: isCheckoutLoading } =
+    useCreateCheckoutSession();
+
+  const router = useRouter();
 
   const addToCart = (menuItem: TMenuItem) => {
     setCartItems((prevItems) => {
@@ -138,8 +145,30 @@ const RestaurantDetailPage = ({
     });
   };
 
-  const handleCheckout = (userFormData: UserFormDataType) => {
-    console.log(userFormData);
+  const handleCheckout = async (userFormData: UserFormDataType) => {
+    if (!restaurant) {
+      return;
+    }
+
+    const checkoutData: CheckoutSessionRequest = {
+      cartItems: cartItems.map((item) => ({
+        menuItemId: item._id,
+        name: item.name,
+        quantity: item.quantity.toString(),
+      })),
+      restaurantId: restaurant._id,
+      deliveryDetails: {
+        name: userFormData.name,
+        email: userFormData.email as string,
+        addressLine1: userFormData.addressLine1,
+        city: userFormData.city,
+        country: userFormData.country,
+      },
+    };
+
+    const data = await createCheckoutSession(checkoutData);
+
+    router.replace(data.url);
   };
 
   const { isLoading, restaurant } = useGetPublicRestaurant(params.restaurantId);
@@ -188,6 +217,7 @@ const RestaurantDetailPage = ({
               <CheckoutButton
                 disabled={cartItems.length === 0}
                 onCheckout={handleCheckout}
+                isLoading={isCheckoutLoading}
               />
             </CardFooter>
           </Card>
