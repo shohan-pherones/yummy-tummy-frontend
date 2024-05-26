@@ -50,3 +50,23 @@ export interface CheckoutSessionRequest {
   };
   restaurantId: string;
 }
+
+export interface Order {
+  _id: string;
+  restaurant: Restaurant;
+  user: User;
+  cartItems: {
+    menuItemId: string;
+    name: string;
+    quantity: number;
+  }[];
+  deliveryDetails: {
+    name: string;
+    email: string;
+    addressLine1: string;
+    city: string;
+    country: string;
+  };
+  totalAmount: number;
+  status: "placed" | "paid" | "inProgress" | "outForDelivery" | "delivered";
+}
