@@ -51,6 +51,13 @@ export interface CheckoutSessionRequest {
   restaurantId: string;
 }
 
+export type OrderStatus =
+  | "placed"
+  | "paid"
+  | "inProgress"
+  | "outForDelivery"
+  | "delivered";
+
 export interface Order {
   _id: string;
   restaurant: Restaurant;
@@ -68,5 +75,6 @@ export interface Order {
     country: string;
   };
   totalAmount: number;
-  status: "placed" | "paid" | "inProgress" | "outForDelivery" | "delivered";
+  status: OrderStatus;
+  createdAt: string;
 }
