@@ -78,3 +78,8 @@ export interface Order {
   status: OrderStatus;
   createdAt: string;
 }
+
+export type UpdateOrderSatusRequest = {
+  orderId: string;
+  status: OrderStatus;
+};
